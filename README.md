@@ -10,6 +10,8 @@ Hard Linker is a native macOS utility for creating hard-linked copies of selecte
 - Link multiple sources into one destination folder
 - Preflight validation for duplicate target names, existing targets, missing files, and recursive destination choices
 - Native progress and status feedback
+- Local history of completed hard-link jobs with source/target verification
+- Search for existing hard links by file or folder within recorded locations or selected search folders
 - Sparkle-based automatic update support
 
 ## What are hard links?
@@ -38,6 +40,8 @@ Hard links must be created on the same volume. Cross-volume attempts will fail.
 3. Click Create Hard Links.
 
 Each selected source is linked into the destination using its original file or folder name. If that target path already exists, the app stops before running `cp`.
+
+The **History** tab records successful jobs on this Mac in `~/Library/Application Support/Hard Linker/history.json`. Use **Verify** to compare source and target files by volume and inode; **Forget** removes only the history entry. The **Search** tab accepts a file or folder and scans recorded locations plus any folders you add. Search results show how many paths were found and the file's total hard-link count. Earlier jobs are not imported, and the app does not automatically scan entire volumes.
 
 ## Development
 
