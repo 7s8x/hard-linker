@@ -1,5 +1,6 @@
 import SwiftUI
 import AppKit
+import UniformTypeIdentifiers
 
 struct HistoryPanel: View {
     @ObservedObject var store: LinkHistoryStore
@@ -92,6 +93,8 @@ struct SearchPanel: View {
     @State private var running = false
     @State private var scanned = 0
     @State private var cancellation: ScanCancellation?
+    @State private var searchID: UUID?
+    @State private var isDropTargeted = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -101,6 +104,8 @@ struct SearchPanel: View {
                     .lineLimit(1).truncationMode(.middle).textSelection(.enabled)
                 Spacer()
             }
+            Text(L("Drop a file or folder anywhere here to select it for search."))
+                .font(.caption).foregroundStyle(.secondary)
             HStack {
                 Button(L("Add folders"), systemImage: "folder.badge.plus") { chooseScopes() }
                 Text("\(L("Recorded locations")): \(records.count * 2) · \(L("Search folders")): \(extraScopes.count)")
@@ -177,6 +182,15 @@ struct SearchPanel: View {
         }
         .padding(.horizontal, 28)
         .padding(.vertical, 14)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .contentShape(Rectangle())
+        .overlay {
+            RoundedRectangle(cornerRadius: 12)
+                .strokeBorder(isDropTargeted ? Color.accentColor : .clear, lineWidth: 2)
+                .padding(8)
+                .allowsHitTesting(false)
+        }
+        .onDrop(of: [UTType.fileURL], isTargeted: $isDropTargeted, perform: handleSubjectDrop)
     }
 
     private func chooseSubject() {
@@ -185,9 +199,29 @@ struct SearchPanel: View {
         panel.canChooseDirectories = true
         panel.allowsMultipleSelection = false
         if panel.runModal() == .OK {
-            subject = panel.url
-            report = nil
+            if let url = panel.url { selectSubject(url) }
         }
+    }
+
+    private func handleSubjectDrop(_ providers: [NSItemProvider]) -> Bool {
+        guard let provider = providers.first(where: { $0.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) }) else {
+            return false
+        }
+        provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { item, error in
+            guard error == nil, let url = URL.fileURL(from: item) else { return }
+            DispatchQueue.main.async { selectSubject(url) }
+        }
+        return true
+    }
+
+    private func selectSubject(_ url: URL) {
+        cancellation?.cancel()
+        searchID = nil
+        cancellation = nil
+        running = false
+        scanned = 0
+        subject = url.fileURL
+        report = nil
     }
 
     private func chooseScopes() {
@@ -204,6 +238,8 @@ struct SearchPanel: View {
     private func startSearch() {
         guard let subject else { return }
         let control = ScanCancellation()
+        let id = UUID()
+        searchID = id
         cancellation = control
         running = true
         scanned = 0
@@ -214,12 +250,14 @@ struct SearchPanel: View {
             let finished = await Task.detached(priority: .userInitiated) {
                 LinkInspector.search(subject: subject, records: records, extraScopes: scopes,
                                      cancel: control, progress: { count in
-                    DispatchQueue.main.async { scanned = count }
+                    DispatchQueue.main.async { if searchID == id { scanned = count } }
                 })
             }.value
+            guard searchID == id else { return }
             report = finished
             running = false
             cancellation = nil
+            searchID = nil
         }
     }
 }

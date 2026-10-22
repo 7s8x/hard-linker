@@ -7,6 +7,7 @@ func L(_ english: String) -> String {
 
 private let translations: [String: String] = [
     "Create": "创建", "History": "历史记录", "Search": "查询",
+    "Version": "版本", "Development": "开发版",
     "selected": "项已选", "Target": "目标", "Source 1": "来源 1", "Source 2": "来源 2",
     "Sources": "来源", "Destination": "目标目录",
     "Drop files or folders here": "拖入文件或文件夹",
@@ -31,6 +32,7 @@ private let translations: [String: String] = [
     "Search was cancelled; results are incomplete.": "搜索已取消，结果不完整。",
     "No hard-linked files found in this folder.": "该文件夹内未发现多链接文件。",
     "No file selected.": "尚未选择文件或文件夹。",
+    "Drop a file or folder anywhere here to select it for search.": "将文件或文件夹拖到此页面任意位置，即可设为查询对象。",
     "Search scope is limited to recorded and selected folders.": "仅搜索记录中的目录和本次指定的文件夹。",
     "No recorded locations. Add a search folder to look beyond the selected item.": "暂无记录，请添加搜索文件夹以查找所选项目之外的链接。",
     "Scan warnings": "扫描提示", "Paths": "路径", "No matching files": "没有匹配的文件",

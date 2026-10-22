@@ -44,12 +44,19 @@ struct ContentView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Picker("", selection: $selectedTab) {
-                Text(L("Create")).tag(0)
-                Text(L("History")).tag(1)
-                Text(L("Search")).tag(2)
+            HStack(spacing: 12) {
+                Picker("", selection: $selectedTab) {
+                    Text(L("Create")).tag(0)
+                    Text(L("History")).tag(1)
+                    Text(L("Search")).tag(2)
+                }
+                .pickerStyle(.segmented)
+
+                Text("\(L("Version")) \(appVersion)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize()
             }
-            .pickerStyle(.segmented)
             .padding(.horizontal, 28)
             .padding(.top, 18)
             .padding(.bottom, 8)
@@ -93,6 +100,10 @@ struct ContentView: View {
 
     private var canCreateLinks: Bool {
         !sourceFolders.isEmpty && destinationFolder != nil && !isCreatingLinks
+    }
+
+    private var appVersion: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? L("Development")
     }
 
     private var sourceSection: some View {
