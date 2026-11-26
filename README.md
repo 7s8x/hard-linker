@@ -39,9 +39,13 @@ Hard Linker 是一个原生 macOS 工具，使用 `cp -al` 为选中的文件或
 
 1. 从本仓库的 [Releases](https://github.com/7s8x/hard-linker/releases) 页面下载 `Hard-Linker-1.1.0.zip`。
 2. 解压并将 `Hard-Linker.app` 移到 `/Applications`。
-3. 首次打开时若 Gatekeeper 提示，右键选择「打开」。
+3. 首次打开时若出现「Apple 无法验证『Hard-Linker』」的提示，在「系统设置 → 隐私与安全性 → 安全性」中点击「仍要打开」；或打开终端执行以下命令后再次打开：
 
-本 release 的 App 使用 ad hoc 签名、未经公证，且未配置自动更新源；请勿依赖它自动升级到上游版本。
+   ```bash
+   xattr -d com.apple.quarantine /Applications/Hard-Linker.app
+   ```
+
+本 release 的 App 使用 ad hoc 签名、未经公证，且未配置自动更新源；请勿依赖它自动升级到上游版本。浏览器下载会添加隔离属性，因此首次打开需要上述额外步骤。
 
 ### 使用
 
@@ -138,9 +142,13 @@ Hard links must be created on the same volume. Cross-volume attempts will fail.
 
 1. Download `Hard-Linker-1.1.0.zip` from this repository's [Releases](https://github.com/7s8x/hard-linker/releases) page.
 2. Unzip it and move `Hard-Linker.app` to `/Applications`.
-3. Right-click and choose Open the first time if macOS Gatekeeper prompts.
+3. If macOS shows "Apple could not verify 'Hard-Linker'", go to **System Settings → Privacy & Security → Security** and click **Open Anyway**. Or run the following command in Terminal, then open the app again:
 
-This release is ad hoc signed, not notarized, and has no automatic update feed configured. Do not rely on it to auto-update to an upstream version.
+   ```bash
+   xattr -d com.apple.quarantine /Applications/Hard-Linker.app
+   ```
+
+This release is ad hoc signed, not notarized, and has no automatic update feed configured. Do not rely on it to auto-update to an upstream version. Browser downloads carry the quarantine attribute, so this extra step is needed on first launch.
 
 ### Usage
 
